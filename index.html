@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form with Multiple Entries</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <form id="entryForm">
+            <h2>Form with Multiple Entries</h2>
+            <div class="common-fields">
+                <label for="subID">Sub ID:</label>
+                <input type="text" id="subID" name="subID" required>
+
+                <label for="bgImageUrl">Background Image URL:</label>
+                <input type="url" id="bgImageUrl" name="bgImageUrl" required>
+            </div>
+            <div class="entry-input">
+                <label for="url">URL:</label>
+                <input type="url" name="url">
+
+                <label for="title">Title:</label>
+                <input type="text" name="title">
+            </div>
+            <button type="button" id="addEntryButton">Add Entry</button>
+            <button type="submit">Upload</button>
+            <div id="entriesContainer"></div>
+        </form>
+    </div>
+
+    <script src="./index.js"></script>
+</body>
+</html>
