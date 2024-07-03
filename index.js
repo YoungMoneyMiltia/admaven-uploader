@@ -1,5 +1,6 @@
 document.getElementById('addEntryButton').addEventListener('click', addEntry);
 document.getElementById('entryForm').addEventListener('submit', submitForm);
+document.getElementById('excelFile').addEventListener('change', handleFileUpload);
 
 function addEntry() {
     const urlInput = document.querySelector('input[name="url"]');
@@ -31,8 +32,39 @@ function addEntry() {
     }
 }
 
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const excelData = XLSX.utils.sheet_to_json(firstSheet);
+
+        const entryContainer = document.getElementById('entriesContainer');
+        excelData.forEach(row => {
+            const url = row.URL ? row.URL.trim() : '';
+            const title = row.Title ? row.Title.trim() : '';
+
+            if (url && title) {
+                const newEntry = document.createElement('div');
+                newEntry.classList.add('entry');
+                newEntry.innerHTML = `
+                    <span><strong>URL:</strong> ${url}</span>
+                    <span><strong>Title:</strong> ${title}</span>
+                `;
+                entryContainer.appendChild(newEntry);
+            }
+        });
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 function submitForm(event) {
     event.preventDefault();
+    showLoader();
 
     const form = document.getElementById('entryForm');
     const formData = new FormData(form);
@@ -51,6 +83,7 @@ function submitForm(event) {
     const titleInput = document.querySelector('input[name="title"]').value.trim();
     if ((urlInput && !titleInput) || (!urlInput && titleInput)) {
         alert('Both URL and Title fields must be filled or both must be empty.');
+        hideLoader();
         return;
     }
 
@@ -74,13 +107,17 @@ function submitForm(event) {
     })
     .catch(error => {
         console.error('Error:', error);
+    })
+    .finally(() => {
+        hideLoader();
+        clearForm();
     });
 }
 
 function downloadExcel(data) {
     // Parse the response
     const parsedData = JSON.parse(data.body);
-    console.log("parsed Data");
+    console.log("parsed Data", parsedData);
 
     // Prepare data for Excel
     const excelData = parsedData.map((item, index) => ({
@@ -88,7 +125,8 @@ function downloadExcel(data) {
         "Short Link": item.message[0].short,
         "Full Short Link": item.message[0].full_short,
         "Destination URL": item.message[0].destination_url,
-        "Title":item.message[0].title
+        "Title": item.message[0].title,
+        "Final Link": item.message[0].final_link
     }));
 
     // Create a new workbook and worksheet
@@ -100,4 +138,17 @@ function downloadExcel(data) {
 
     // Generate a file and trigger the download
     XLSX.writeFile(wb, "links.xlsx");
+}
+
+function showLoader() {
+    document.getElementById('loader').style.display = 'block';
+}
+
+function hideLoader() {
+    document.getElementById('loader').style.display = 'none';
+}
+
+function clearForm() {
+    document.getElementById('entryForm').reset();
+    document.getElementById('entriesContainer').innerHTML = '';
 }
