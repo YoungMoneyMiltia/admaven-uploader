@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <form id="entryForm">
-            <h2>Form with Multiple Entries</h2>
+            <h2>Admaven Uploader</h2>
             <div class="common-fields">
                 <label for="subID">Sub ID:</label>
                 <input type="text" id="subID" name="subID" required>
@@ -26,9 +26,14 @@
                 <input type="text" name="title">
             </div>
             <button type="button" id="addEntryButton">Add Entry</button>
+            <div class="file-upload">
+                <label for="excelFile">Upload Excel File:</label>
+                <input type="file" id="excelFile" accept=".xlsx">
+            </div>
             <button type="submit">Upload</button>
             <div id="entriesContainer"></div>
         </form>
+        <div id="loader" class="loader" style="display: none;"></div>
     </div>
 
     <script src="./index.js"></script>
