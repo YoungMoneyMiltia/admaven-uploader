@@ -2,6 +2,8 @@ document.getElementById('addEntryButton').addEventListener('click', addEntry);
 document.getElementById('entryForm').addEventListener('submit', submitForm);
 document.getElementById('excelFile').addEventListener('change', handleFileUpload);
 
+let entryCount = 0; // Initialize entry counter
+
 function addEntry() {
     const urlInput = document.querySelector('input[name="url"]');
     const titleInput = document.querySelector('input[name="title"]');
@@ -15,11 +17,14 @@ function addEntry() {
     }
 
     if (url && title) {
+        entryCount++; // Increment the entry counter
+
         const entryContainer = document.getElementById('entriesContainer');
         const newEntry = document.createElement('div');
         newEntry.classList.add('entry');
 
         newEntry.innerHTML = `
+            <span><strong>Serial:</strong> ${entryCount}</span>
             <span><strong>URL:</strong> ${url}</span>
             <span><strong>Title:</strong> ${title}</span>
         `;
@@ -49,9 +54,12 @@ function handleFileUpload(event) {
             const title = row.Title ? row.Title.trim() : '';
 
             if (url && title) {
+                entryCount++; // Increment the entry counter
+
                 const newEntry = document.createElement('div');
                 newEntry.classList.add('entry');
                 newEntry.innerHTML = `
+                    <span><strong>Serial:</strong> ${entryCount}</span>
                     <span><strong>URL:</strong> ${url}</span>
                     <span><strong>Title:</strong> ${title}</span>
                 `;
@@ -72,8 +80,9 @@ function submitForm(event) {
     const entries = [];
     document.querySelectorAll('#entriesContainer .entry').forEach(entry => {
         const entryData = {
-            url: entry.children[0].textContent.replace('URL: ', ''),
-            title: entry.children[1].textContent.replace('Title: ', '')
+            serial: entry.querySelector('span:nth-child(1)').textContent.replace('Serial: ', ''),
+            url: entry.querySelector('span:nth-child(2)').textContent.replace('URL: ', ''),
+            title: entry.querySelector('span:nth-child(3)').textContent.replace('Title: ', '')
         };
         entries.push(entryData);
     });
@@ -151,4 +160,5 @@ function hideLoader() {
 function clearForm() {
     document.getElementById('entryForm').reset();
     document.getElementById('entriesContainer').innerHTML = '';
+    entryCount = 0; // Reset the entry counter
 }
